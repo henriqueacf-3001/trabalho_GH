@@ -64,12 +64,37 @@ class AnimatedSprite(pygame.sprite.Sprite):
             self.rect.y = HEIGHT-120
         if self.rect.y < 0:
             self.rect.y = 0
+
+class Fundo:
+    def __init__(self, caminho, tamanho):
+        imagem_original = pygame.image.load(caminho).convert()
+        self.image = pygame.transform.scale(imagem_original, tamanho)
+
+    def desenhar(self, tela):
+        tela.blit(self.image, (0, 0))
+
+
+class Obstaculo(pygame.sprite.Sprite):
+    def __init__(self, caminho, posicao, tamanho):
+        super(Obstaculo, self).__init__()
+
+        imagem_original = pygame.image.load(caminho).convert_alpha()
+        self.image = pygame.transform.scale(imagem_original, tamanho)
+        self.rect = self.image.get_rect(topleft=posicao)
+
+
+        
 def main():
+    fundo = Fundo('./fundo/WhatsApp Image 2026-09-23 at 19.08.39.jpeg', TAMANHO)
     images_running = load_images(path='./imagens')
     images_idle = load_images(path='./imagens')
     player = AnimatedSprite(position=(300, 300),
         images_running=images_running , images_idle=images_idle)
     all_sprites = pygame.sprite.Group(player)
+
+    obstaculo_cima = Obstaculo('./obstaculos/laser_cima.png', (500, 0), (90, 250))
+    obstaculo_baixo = Obstaculo('./obstaculos/laser_baixo.png', (620, 250), (90, 230))
+    obstaculos = pygame.sprite.Group(obstaculo_cima, obstaculo_baixo)
 
     running = True
     while running:
@@ -96,7 +121,8 @@ def main():
                     player.velocity.y = 0
 
         all_sprites.update(dt)
-        screen.fill(BACKGROUND_COLOR)
+        fundo.desenhar(screen)
+        obstaculos.draw(screen)
         all_sprites.draw(screen)
         pygame.display.update()
 
