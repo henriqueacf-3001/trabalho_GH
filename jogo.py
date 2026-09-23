@@ -1,4 +1,5 @@
 import os
+import random
 import pygame
 pygame.init()
 
@@ -92,9 +93,24 @@ def main():
         images_running=images_running , images_idle=images_idle)
     all_sprites = pygame.sprite.Group(player)
 
-    obstaculo_cima = Obstaculo('./obstaculos/laser_cima.png', (500, 0), (90, 250))
-    obstaculo_baixo = Obstaculo('./obstaculos/laser_baixo.png', (620, 250), (90, 230))
-    obstaculos = pygame.sprite.Group(obstaculo_cima, obstaculo_baixo)
+    altura_1 = random.randint(90, 220)
+    altura_2 = random.randint(90, 220)
+    altura_3 = random.randint(90, 220)
+    altura_4 = random.randint(90, 220)
+    altura_5 = random.randint(90, 220)
+    altura_6 = random.randint(90, 220)
+
+    obstaculo_1 = Obstaculo('./obstaculos/laser_cima.png', (50, -7), (80, altura_1))
+    obstaculo_2 = Obstaculo('./obstaculos/laser_baixo.png', (160, HEIGHT-altura_2 +7), (80, altura_2))
+    obstaculo_3 = Obstaculo('./obstaculos/laser_cima.png', (270, -7), (80, altura_3))
+    obstaculo_4 = Obstaculo('./obstaculos/laser_baixo.png', (440, HEIGHT-altura_4 +7), (80, altura_4))
+    obstaculo_5 = Obstaculo('./obstaculos/laser_cima.png', (550, -7), (80, altura_5))
+    obstaculo_6 = Obstaculo('./obstaculos/laser_baixo.png', (660, HEIGHT-altura_6 +7), (80, altura_6))
+
+    obstaculos = pygame.sprite.Group(
+        obstaculo_1, obstaculo_2, obstaculo_3,
+        obstaculo_4, obstaculo_5, obstaculo_6
+    )
 
     running = True
     while running:
