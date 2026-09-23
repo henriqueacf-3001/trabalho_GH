@@ -89,8 +89,7 @@ def main():
     fundo = Fundo('./fundo/WhatsApp Image 2026-09-23 at 19.08.39.jpeg', TAMANHO)
     images_running = load_images(path='./imagens')
     images_idle = load_images(path='./imagens')
-    player = AnimatedSprite(position=(300, 300),
-        images_running=images_running , images_idle=images_idle)
+    player = AnimatedSprite(position=(300, 300),images_running=images_running , images_idle=images_idle)
     all_sprites = pygame.sprite.Group(player)
 
     altura_1 = random.randint(90, 220)
