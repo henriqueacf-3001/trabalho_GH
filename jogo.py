@@ -79,7 +79,7 @@ class Obstaculo(pygame.sprite.Sprite):
     def __init__(self, cima_baixo):
         super(Obstaculo, self).__init__()
         self.cima_baixo = cima_baixo
-        tamanhos_possiveis = [90, 140, 180, 220]
+        tamanhos_possiveis = [30,90, 140, 180, 220]
         posicoes_possiveis = [400, 550, 700, 850, 1000, 1150] # alterar
         tamanho_imagem = random.choice(tamanhos_possiveis)
 
@@ -120,10 +120,19 @@ def main():
     obstaculo_4 = Obstaculo('baixo')
     obstaculo_5 = Obstaculo('cima')
     obstaculo_6 = Obstaculo('baixo')
+    obstaculo_7 = Obstaculo('cima')
+    obstaculo_8 = Obstaculo('baixo')
+    obstaculo_9 = Obstaculo('cima')
+    obstaculo_10 = Obstaculo('baixo')
+    obstaculo_11= Obstaculo('cima')
+    obstaculo_12= Obstaculo('baixo')
+    
+
     
     obstaculos = pygame.sprite.Group(
         obstaculo_1, obstaculo_2, obstaculo_3,
-        obstaculo_4, obstaculo_5, obstaculo_6
+        obstaculo_4, obstaculo_5, obstaculo_6, obstaculo_7, obstaculo_8, obstaculo_9,
+                obstaculo_10, obstaculo_11, obstaculo_12
     )
 
     running = True
