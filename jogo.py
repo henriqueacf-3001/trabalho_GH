@@ -76,13 +76,21 @@ class Fundo:
 
 
 class Obstaculo(pygame.sprite.Sprite):
-    def __init__(self, caminho, posicao, tamanho):
+    def __init__(self, cima_baixo):
         super(Obstaculo, self).__init__()
+        self.cima_baixo = cima_baixo
+        tamanhos_possiveis = [90, 140, 180, 220]
+        posicoes_possiveis = [400, 550, 700, 850, 1000, 1150] # alterar
+        tamanho_imagem = random.choice(tamanhos_possiveis)
 
-        imagem_original = pygame.image.load(caminho).convert_alpha()
-        self.image = pygame.transform.scale(imagem_original, tamanho)
-        self.rect = self.image.get_rect(topleft=posicao)
-
+        if self.cima_baixo == 'cima':
+            imagem_original = pygame.image.load('obstaculos' + os.sep + 'laser_cima.png').convert_alpha()
+            altura_imagem = -7
+        else:
+            imagem_original = pygame.image.load('obstaculos' + os.sep + 'laser_baixo.png').convert_alpha()
+            altura_imagem = HEIGHT-tamanho_imagem +7
+        self.image = pygame.transform.scale(imagem_original, (80, tamanho_imagem))
+        self.rect = self.image.get_rect(topleft=(random.choice(posicoes_possiveis), altura_imagem))
 
         
 def main():
@@ -92,20 +100,27 @@ def main():
     player = AnimatedSprite(position=(300, 300),images_running=images_running , images_idle=images_idle)
     all_sprites = pygame.sprite.Group(player)
 
-    altura_1 = random.randint(90, 220)
-    altura_2 = random.randint(90, 220)
-    altura_3 = random.randint(90, 220)
-    altura_4 = random.randint(90, 220)
-    altura_5 = random.randint(90, 220)
-    altura_6 = random.randint(90, 220)
+    # altura_1 = random.randint(90, 220)
+    # altura_2 = random.randint(90, 220)
+    # altura_3 = random.randint(90, 220)
+    # altura_4 = random.randint(90, 220)
+    # altura_5 = random.randint(90, 220)
+    # altura_6 = random.randint(90, 220)
 
-    obstaculo_1 = Obstaculo('./obstaculos/laser_cima.png', (50, -7), (80, altura_1))
-    obstaculo_2 = Obstaculo('./obstaculos/laser_baixo.png', (160, HEIGHT-altura_2 +7), (80, altura_2))
-    obstaculo_3 = Obstaculo('./obstaculos/laser_cima.png', (270, -7), (80, altura_3))
-    obstaculo_4 = Obstaculo('./obstaculos/laser_baixo.png', (440, HEIGHT-altura_4 +7), (80, altura_4))
-    obstaculo_5 = Obstaculo('./obstaculos/laser_cima.png', (550, -7), (80, altura_5))
-    obstaculo_6 = Obstaculo('./obstaculos/laser_baixo.png', (660, HEIGHT-altura_6 +7), (80, altura_6))
+    # obstaculo_1 = Obstaculo('./obstaculos/laser_cima.png', (50, -7), (80, altura_1))
+    # obstaculo_2 = Obstaculo('./obstaculos/laser_baixo.png', (160, HEIGHT-altura_2 +7), (80, altura_2))
+    # obstaculo_3 = Obstaculo('./obstaculos/laser_cima.png', (270, -7), (80, altura_3))
+    # obstaculo_4 = Obstaculo('./obstaculos/laser_baixo.png', (440, HEIGHT-altura_4 +7), (80, altura_4))
+    # obstaculo_5 = Obstaculo('./obstaculos/laser_cima.png', (550, -7), (80, altura_5))
+    # obstaculo_6 = Obstaculo('./obstaculos/laser_baixo.png', (660, HEIGHT-altura_6 +7), (80, altura_6))
 
+    obstaculo_1 = Obstaculo('cima')
+    obstaculo_2 = Obstaculo('baixo')
+    obstaculo_3 = Obstaculo('cima')
+    obstaculo_4 = Obstaculo('baixo')
+    obstaculo_5 = Obstaculo('cima')
+    obstaculo_6 = Obstaculo('baixo')
+    
     obstaculos = pygame.sprite.Group(
         obstaculo_1, obstaculo_2, obstaculo_3,
         obstaculo_4, obstaculo_5, obstaculo_6
