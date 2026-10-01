@@ -121,7 +121,7 @@ class Obstaculo(pygame.sprite.Sprite):
 def main():
     fundo = Fundo('./fundo/WhatsApp Image 2026-09-23 at 19.08.39.jpeg', TAMANHO)
     images_running = load_images(path='./imagens')
-    images_idle = load_images(path='./imagens')
+    images_idle = images_running
     player = AnimatedSprite(position=(300, 300),images_running=images_running , images_idle=images_idle)
     all_sprites = pygame.sprite.Group(player)
 
@@ -146,6 +146,7 @@ def main():
                 obstaculo_10, obstaculo_11, obstaculo_12
     )
 
+    clock.tick()
     running = True
     while running:
         dt = clock.tick(FPS) / 1000
