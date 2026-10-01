@@ -1,6 +1,7 @@
 import os
 import random
 import pygame
+import time
 pygame.init()
 
 TAMANHO = WIDTH, HEIGHT = 720, 480
@@ -67,15 +68,15 @@ class AnimatedSprite(pygame.sprite.Sprite):
                 if pygame.sprite.collide_mask(self, obstaculo) is not None:
                     return obstaculo
         return None
-       
+
 
 class Fundo:
     def __init__(self, caminho, tamanho):
         imagem_original = pygame.image.load(caminho).convert()
         self.image = pygame.transform.scale(imagem_original, tamanho)
 
-    def desenhar(self, tela):
-        tela.blit(self.image, (0, 0))
+    def desenhar(self, tela, dt):
+        tela.blit(self.image, (-dt, 0))
 
 
 class Obstaculo(pygame.sprite.Sprite):
@@ -105,7 +106,7 @@ class Obstaculo(pygame.sprite.Sprite):
         if self.rect.right < 0:
             # self.x = float(random.randint(WIDTH + 100, WIDTH + 500))
             # self.rect.x = int(self.x)
-            tamanhos_possiveis = [90, 140, 180, 220]
+            tamanhos_possiveis = [90, 140, 180, 190]
             posicoes_possiveis = [700, 850, 900,  1000, 1150, 1300]
             tamanho_imagem = random.choice(tamanhos_possiveis)
     
@@ -146,6 +147,12 @@ def main():
                 obstaculo_10, obstaculo_11, obstaculo_12
     )
 
+    vidas = 3
+    encostado = False
+    metros = 0
+    fonte = pygame.font.Font(None, 36)
+    iniciofundo = 0
+
     clock.tick()
     running = True
     while running:
@@ -168,14 +175,26 @@ def main():
         all_sprites.update(dt)
         obstaculos.update(dt)
 
+        metros += dt * 10
         if player.colidiu(obstaculos):
-            print('O jogador colidiu com um obstáculo')
-            running = False
+            if encostado == False:
+                vidas -= 1
+                encostado = True
+        else:
+            encostado = False
 
-        fundo.desenhar(screen)
+        if vidas == 0:
+            print('Fim de jogo! Pontuacao:', int(metros), 'm')
+            running = False
+            time.sleep(2)
+
+        fundo.desenhar(screen, iniciofundo)
         obstaculos.draw(screen)
         all_sprites.draw(screen)
+        texto = fonte.render('Vidas: ' + str(vidas) + '   Metros: ' + str(int(metros)) + ' m', True, 'white')
+        screen.blit(texto, (10, 10))
         pygame.display.update()
+        iniciofundo += 0.1
 
 
 if __name__ == '__main__':
