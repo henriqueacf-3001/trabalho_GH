@@ -8,6 +8,7 @@ BACKGROUND_COLOR = pygame.Color('black')
 FPS = 30
 GRAVIDADE = 0.7
 FORCA_IMPULSO = 15
+VELOCIDADE_OBSTACULOS = 200
 
 screen = pygame.display.set_mode(TAMANHO)
 clock = pygame.time.Clock()
@@ -25,12 +26,10 @@ class AnimatedSprite(pygame.sprite.Sprite):
     def __init__(self, position, images_running, images_idle):
         super(AnimatedSprite, self).__init__()
 
-        tamanho_animaçao = (120, 120)  # This should match the tamanho_animaçao of the images.
+        tamanho_animaçao = (120, 120)
         resized = [pygame.transform.scale(image, tamanho_animaçao) for image in images_running]
         self.rect = pygame.Rect(position, tamanho_animaçao)
         self.images = resized
-        self.images_right = resized  # images
-        self.images_left = [pygame.transform.flip(image, True, False) for image in resized]  # Flipping every image.
         self.index = 0
         self.images_idle = [pygame.transform.scale(image, tamanho_animaçao) for image in images_idle]
 
@@ -44,12 +43,8 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.current_frame = 0
 
     def update(self, dt):
-        if self.velocity.x > 0:  # Use the right images if sprite is moving right.
-            self.images = self.images_right
-        elif self.velocity.x < 0:
-            self.images = self.images_left
-        else:
-            self.images = self.images_idle
+        self.velocity.x = 0
+        self.images = self.images_idle
 
         self.current_time += dt
         if self.current_time >= self.animation_time:
@@ -79,40 +74,48 @@ class Obstaculo(pygame.sprite.Sprite):
     def __init__(self, cima_baixo):
         super(Obstaculo, self).__init__()
         self.cima_baixo = cima_baixo
-        tamanhos_possiveis = [30,90, 140, 180, 220]
-        posicoes_possiveis = [400, 550, 700, 850, 1000, 1150] # alterar
+        tamanhos_possiveis = [90, 140, 180, 210]
+        posicoes_possiveis = [700, 850, 900,  1000, 1150, 1300]
         tamanho_imagem = random.choice(tamanhos_possiveis)
 
         if self.cima_baixo == 'cima':
-            imagem_original = pygame.image.load('obstaculos' + os.sep + 'laser_cima.png').convert_alpha()
+            self.imagem_original = pygame.image.load('obstaculos' + os.sep + 'laser_cima.png').convert_alpha()
             altura_imagem = -7
         else:
-            imagem_original = pygame.image.load('obstaculos' + os.sep + 'laser_baixo.png').convert_alpha()
+            self.imagem_original = pygame.image.load('obstaculos' + os.sep + 'laser_baixo.png').convert_alpha()
             altura_imagem = HEIGHT-tamanho_imagem +7
-        self.image = pygame.transform.scale(imagem_original, (80, tamanho_imagem))
-        self.rect = self.image.get_rect(topleft=(random.choice(posicoes_possiveis), altura_imagem))
-
         
+        self.image = pygame.transform.scale(self.imagem_original, (80, tamanho_imagem))
+        self.rect = self.image.get_rect(topleft=(random.choice(posicoes_possiveis), altura_imagem))
+        self.x = float(self.rect.x)
+        self.velocidade = VELOCIDADE_OBSTACULOS
+
+    def update(self, dt):
+        self.x -= self.velocidade * dt
+        self.rect.x = int(self.x)
+
+        if self.rect.right < 0:
+            # self.x = float(random.randint(WIDTH + 100, WIDTH + 500))
+            # self.rect.x = int(self.x)
+            tamanhos_possiveis = [90, 140, 180, 220]
+            posicoes_possiveis = [700, 850, 900,  1000, 1150, 1300]
+            tamanho_imagem = random.choice(tamanhos_possiveis)
+    
+            if self.cima_baixo == 'cima':
+                altura_imagem = -7
+            else:
+                altura_imagem = HEIGHT-tamanho_imagem +7
+
+            self.image = pygame.transform.scale(self.imagem_original, (80, tamanho_imagem))
+            self.rect = self.image.get_rect(topleft=(random.choice(posicoes_possiveis), altura_imagem))
+            self.x = float(self.rect.x)
+
 def main():
     fundo = Fundo('./fundo/WhatsApp Image 2026-09-23 at 19.08.39.jpeg', TAMANHO)
     images_running = load_images(path='./imagens')
     images_idle = load_images(path='./imagens')
     player = AnimatedSprite(position=(300, 300),images_running=images_running , images_idle=images_idle)
     all_sprites = pygame.sprite.Group(player)
-
-    # altura_1 = random.randint(90, 220)
-    # altura_2 = random.randint(90, 220)
-    # altura_3 = random.randint(90, 220)
-    # altura_4 = random.randint(90, 220)
-    # altura_5 = random.randint(90, 220)
-    # altura_6 = random.randint(90, 220)
-
-    # obstaculo_1 = Obstaculo('./obstaculos/laser_cima.png', (50, -7), (80, altura_1))
-    # obstaculo_2 = Obstaculo('./obstaculos/laser_baixo.png', (160, HEIGHT-altura_2 +7), (80, altura_2))
-    # obstaculo_3 = Obstaculo('./obstaculos/laser_cima.png', (270, -7), (80, altura_3))
-    # obstaculo_4 = Obstaculo('./obstaculos/laser_baixo.png', (440, HEIGHT-altura_4 +7), (80, altura_4))
-    # obstaculo_5 = Obstaculo('./obstaculos/laser_cima.png', (550, -7), (80, altura_5))
-    # obstaculo_6 = Obstaculo('./obstaculos/laser_baixo.png', (660, HEIGHT-altura_6 +7), (80, altura_6))
 
     obstaculo_1 = Obstaculo('cima')
     obstaculo_2 = Obstaculo('baixo')
@@ -143,23 +146,18 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    player.velocity.x = 4
-                elif event.key == pygame.K_LEFT:
-                    player.velocity.x = -4
-                elif event.key == pygame.K_DOWN:
+                if event.key == pygame.K_DOWN:
                     player.velocity.y = 4
-                if event.key == pygame.K_UP:
+                elif event.key == pygame.K_UP:
                     player.velocity.y = -12
                 elif event.key == pygame.K_SPACE:
                     player.velocity.y = - FORCA_IMPULSO
             elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
-                    player.velocity.x = 0
-                elif event.key == pygame.K_DOWN or event.key == pygame.K_UP or event.key == pygame.K_SPACE:
+                if event.key == pygame.K_DOWN or event.key == pygame.K_UP or event.key == pygame.K_SPACE:
                     player.velocity.y = 0
 
         all_sprites.update(dt)
+        obstaculos.update(dt)
         fundo.desenhar(screen)
         obstaculos.draw(screen)
         all_sprites.draw(screen)
