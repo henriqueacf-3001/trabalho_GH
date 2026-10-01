@@ -61,6 +61,14 @@ class AnimatedSprite(pygame.sprite.Sprite):
         if self.rect.y < 0:
             self.rect.y = 0
 
+    def colidiu(self, obstaculos):
+        for obstaculo in obstaculos:
+            if self.rect.colliderect(obstaculo.rect):
+                if pygame.sprite.collide_mask(self, obstaculo) is not None:
+                    return obstaculo
+        return None
+       
+
 class Fundo:
     def __init__(self, caminho, tamanho):
         imagem_original = pygame.image.load(caminho).convert()
@@ -158,6 +166,11 @@ def main():
 
         all_sprites.update(dt)
         obstaculos.update(dt)
+
+        if player.colidiu(obstaculos):
+            print('O jogador colidiu com um obstáculo')
+            running = False
+
         fundo.desenhar(screen)
         obstaculos.draw(screen)
         all_sprites.draw(screen)
