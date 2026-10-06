@@ -135,6 +135,10 @@ class Obstaculo(pygame.sprite.Sprite):
             self.x = float(self.rect.x)
 
 def main():
+    caminho_som = os.path.join(os.path.dirname(__file__), "sons", "laser.wav")
+    som_laser = pygame.mixer.Sound(caminho_som)
+    som_laser.set_volume(0.5)
+
     fundo = Fundo('./fundo/WhatsApp Image 2026-09-23 at 19.08.39.jpeg', TAMANHO)
     images_running = load_images(path='./imagens')
     images_idle = images_running
@@ -193,6 +197,7 @@ def main():
         if player.colidiu(obstaculos):
             if encostado == False:
                 vidas -= 1
+                som_laser.play()
                 encostado = True
         else:
             encostado = False
@@ -212,3 +217,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+ 
