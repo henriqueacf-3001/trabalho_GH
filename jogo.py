@@ -72,12 +72,27 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
 class Fundo:
     def __init__(self, caminho, tamanho):
-        imagem_original = pygame.image.load(caminho).convert()
-        self.image = pygame.transform.scale(imagem_original, tamanho)
+        self.image = pygame.image.load(caminho).convert()
+
+        # Ajusta a altura sem deformar a imagem.
+        largura = round(self.image.get_width() * tamanho[1]
+                        / self.image.get_height())
+        self.image = pygame.transform.scale(
+            self.image, (largura, tamanho[1])
+        )
+
+        self.x = 0
+        self.crop_rect = pygame.Rect(0, 0, *tamanho)
+        self.cropped_surface = pygame.Surface(tamanho)
 
     def desenhar(self, tela, dt):
-        tela.blit(self.image, (-dt, 0))
+        # Move devagar e para quando chegar ao final da imagem.
+        limite = max(0, self.image.get_width() - self.crop_rect.width)
+        self.x = min(self.x + 6 * dt, limite)
+        self.crop_rect.x = int(self.x)
 
+        self.cropped_surface.blit(self.image, (0, 0), self.crop_rect)
+        tela.blit(self.cropped_surface, (0, 0))
 
 class Obstaculo(pygame.sprite.Sprite):
     def __init__(self, cima_baixo):
@@ -151,7 +166,6 @@ def main():
     encostado = False
     metros = 0
     fonte = pygame.font.Font(None, 36)
-    iniciofundo = 0
 
     clock.tick()
     running = True
@@ -188,13 +202,12 @@ def main():
             running = False
             time.sleep(2)
 
-        fundo.desenhar(screen, iniciofundo)
+        fundo.desenhar(screen, dt)
         obstaculos.draw(screen)
         all_sprites.draw(screen)
         texto = fonte.render('Vidas: ' + str(vidas) + '   Metros: ' + str(int(metros)) + ' m', True, 'white')
         screen.blit(texto, (10, 10))
         pygame.display.update()
-        iniciofundo += 0.1
 
 
 if __name__ == '__main__':
